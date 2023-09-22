@@ -5,7 +5,7 @@ import 'package:upstrom/screens/city_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class LocationScreen extends StatefulWidget {
-  LocationScreen({this.locationWeather});
+  const LocationScreen({this.locationWeather});
 
   final locationWeather;
 
@@ -20,28 +20,47 @@ class _LocationScreenState extends State<LocationScreen> {
   String? cityname;
   String? In;
   String? message;
+  String? description;
+  var wind;
+  int? minTemp;
+  int? maxTemp;
+  int? humidity;
 
   @override
   void initState() {
     super.initState();
-
     updateUI(widget.locationWeather);
   }
+
+
 
   void updateUI(dynamic weatherdata) {
     setState(() {
       if (weatherdata == null) {
         temperature = 0;
+        minTemp = 0;
+        maxTemp = 0;
         weathericon = 'Error';
+        description = 'Error';
         message = 'Unable to get weather data';
         cityname = '';
         In = '';
+        wind = 0;
+        humidity = 0;
         return;
       }
       double temp = weatherdata['main']['temp'];
       temperature = temp.toInt();
       var condition = weatherdata['weather'][0]['id'];
       In = 'in';
+      description = weatherdata['weather'][0]['description'];
+      description = description?.toUpperCase();
+      wind = weatherdata['wind']['speed'];
+      temp = weatherdata['main']['temp_min'];
+      minTemp = temp.toInt();
+      temp = weatherdata['main']['temp_max'];
+      humidity = weatherdata['main']['humidity'];
+      maxTemp = temp.toInt();
       weathericon = weatherModel.getWeatherIcon(condition);
       message = weatherModel.getMessage(temperature!);
       cityname = weatherdata['name'];
@@ -52,92 +71,166 @@ class _LocationScreenState extends State<LocationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CachedNetworkImage(
-        placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-        errorWidget: (context, url, error) => Image.asset('images/error'),
-        imageUrl: 'https://images.unsplash.com/photo-1682685797088-283404e24b9d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-        imageBuilder:(context, imageProvider) => Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(image: imageProvider,
-              fit: BoxFit.fitHeight,
-              colorFilter: ColorFilter.mode(
-                  Colors.white.withOpacity(0.7), BlendMode.dstATop),
+      body: SingleChildScrollView(
+        child: CachedNetworkImage(
+          placeholder: (context, url) => Center(
+            child: Container(
+              alignment: Alignment.center,
+              height: MediaQuery.of(context).size.height,
+              child: CircularProgressIndicator(
+                color: Colors.white,
+              ),
             ),
           ),
-
-          constraints: BoxConstraints.expand(),
-          child: SafeArea(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(right: 12.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Container(
-                        child: IconButton(
+          errorWidget: (context, url, error) => Center(
+              child: Container(
+                  alignment: Alignment.center,
+                  height: MediaQuery.of(context).size.height,
+                  child: Image.asset('images/error.png'))),
+          imageUrl: 'https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80',
+          imageBuilder: (context, imageProvider) => Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: imageProvider,
+                fit: BoxFit.fitHeight,
+                colorFilter: ColorFilter.mode(
+                    Colors.white.withOpacity(0.7), BlendMode.dstATop),
+              ),
+            ),
+            child: SafeArea(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Container(
+                          child: IconButton(
+                            onPressed: () async {
+                              var weatherData =
+                                  await weatherModel.getLocationWeather();
+                              updateUI(weatherData);
+                            },
+                            icon: const Icon(
+                              Icons.near_me,
+                              size: 50,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        IconButton(
                           onPressed: () async {
-                            var weatherData =
-                                await weatherModel.getLocationWeather();
-                            updateUI(weatherData);
+                            var typename = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return CityScreen();
+                                },
+                              ),
+                            );
+                            if (typename != null) {
+                              var weatherdata =
+                                  await weatherModel.getcityweather(typename);
+                              updateUI(weatherdata);
+                            }
                           },
                           icon: const Icon(
-                            Icons.near_me,
+                            Icons.location_city,
                             size: 50,
                             color: Colors.black,
                           ),
                         ),
-                      ),
-                      IconButton(
-                        onPressed: () async{
-                          var typename = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return CityScreen();
-                              },
-                            ),
-                          );
-                          if(typename!=null){
-                            var weatherdata = await weatherModel.getcityweather(typename);
-                            updateUI(weatherdata);
-                          }
-                        },
-                        icon: const Icon(
-                          Icons.location_city,
-                          size: 50,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(left: 15.0,top: 50),
-                  child: Row(
-                    children: <Widget>[
-                      Text(
-                        '$temperature°',
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15, top: 30),
+                    child: Text(
+                      cityname!,
+                      style: kTempTextStyle2,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 15.0),
+                    child: RichText(
+                      text: TextSpan(
+                        text: '$temperature°',
                         style: kTempTextStyle,
+                        children: <TextSpan>[
+                          TextSpan(
+                              text: '$description',
+                              style: TextStyle(
+                                fontSize: 30,
+                              )),
+                        ],
                       ),
-                      Text(
-                        weathericon!,
-                        style: kConditionTextStyle,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20.0),
+                    child: Text('$maxTemp°-$minTemp°',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25,
+                        )),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 20, top: 30),
+                    child: RichText(
+                      text: TextSpan(
+                        text: 'Wind:- ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25,
+                        ),
+                        children: <TextSpan>[
+                          TextSpan(
+                              text: ' $wind m/s',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              )),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(30.0),
-                  child: Text(
-                    "$message $In $cityname!",
-                    textAlign: TextAlign.left,
-                    style: kMessageTextStyle,
+                  Padding(
+                    padding: EdgeInsets.only(left: 20, top: 5),
+                    child: RichText(
+                      text: TextSpan(
+                        text: 'Humidity:- ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25,
+                        ),
+                        children: <TextSpan>[
+                          TextSpan(
+                              text: ' $humidity%',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              )),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ],
+                  Padding(
+                    padding: EdgeInsets.only(left: 20.0, top: 40),
+                    child: Container(
+                      child: Text(
+                        "$message $In $cityname!",
+                        textAlign: TextAlign.left,
+                        style: kMessageTextStyle,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
