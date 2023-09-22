@@ -19,22 +19,31 @@ class _LoadingScreenState extends State<LoadingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black12,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'Loading Please Wait',
+            'Getting Location',
             style: TextStyle(
-              color: Colors.black,
+              color: Colors.grey,
               fontWeight: FontWeight.w900,
+              fontSize: 30,
+            ),
+          ),
+          Text(
+            'Please Wait',
+            style: TextStyle(
+              color: Colors.grey,
+              fontWeight: FontWeight.w900,
+              fontSize: 30,
             ),
           ),
           SizedBox(
-            height: 20,
+            height: 50,
           ),
           const SpinKitDoubleBounce(
-            color: Colors.black,
+            color: Colors.grey,
             size: 100,
           ),
         ],
