@@ -16,7 +16,6 @@ class LocationScreen extends StatefulWidget {
 class _LocationScreenState extends State<LocationScreen> {
   WeatherModel weatherModel = WeatherModel();
   int? temperature;
-  String? weathericon;
   String? cityname;
   String? In;
   String? message;
@@ -25,11 +24,53 @@ class _LocationScreenState extends State<LocationScreen> {
   int? minTemp;
   int? maxTemp;
   int? humidity;
+  String url= clearskye;
 
   @override
   void initState() {
     super.initState();
     updateUI(widget.locationWeather);
+  }
+
+  String setimage(int condition){
+
+    if(condition>=200 && condition<300){
+      return thunderstorm;
+
+    }
+    else if(condition>=300 && condition<500) {
+
+      return drizzle;
+
+    }
+    else if(condition>=500 && condition<600){
+
+      return rain;
+
+    }
+    else if(condition>=600 && condition<700){
+
+      return snow;
+
+    }
+    else if(condition>=700 && condition<800){
+
+      return mist;
+    }
+    else if(condition==800){
+
+      return clearskye;
+
+    }
+    else if(condition>800){
+
+      return cloud;
+
+    }
+    else{
+      return sand;
+    }
+
   }
 
 
@@ -40,7 +81,6 @@ class _LocationScreenState extends State<LocationScreen> {
         temperature = 0;
         minTemp = 0;
         maxTemp = 0;
-        weathericon = 'Error';
         description = 'Error';
         message = 'Unable to get weather data';
         cityname = '';
@@ -61,10 +101,15 @@ class _LocationScreenState extends State<LocationScreen> {
       temp = weatherdata['main']['temp_max'];
       humidity = weatherdata['main']['humidity'];
       maxTemp = temp.toInt();
-      weathericon = weatherModel.getWeatherIcon(condition);
       message = weatherModel.getMessage(temperature!);
       cityname = weatherdata['name'];
-      print(weatherdata);
+      print(condition);
+      // print(weatherdata);
+      print(url);
+      url = setimage(condition);
+      print(url);
+
+
     });
   }
 
@@ -87,7 +132,7 @@ class _LocationScreenState extends State<LocationScreen> {
                   alignment: Alignment.center,
                   height: MediaQuery.of(context).size.height,
                   child: Image.asset('images/error.png'))),
-          imageUrl: 'https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80',
+          imageUrl: url,
           imageBuilder: (context, imageProvider) => Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
