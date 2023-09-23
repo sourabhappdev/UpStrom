@@ -34,7 +34,7 @@ const kTextfieldInputDecoration =InputDecoration(
     size: 40,
     color: Colors.black,
   ),
-  hintText: 'Enter City Name',
+  hintText: 'Enter city name',
   hintStyle: TextStyle(
     color: Colors.grey,
   ),
