@@ -24,7 +24,8 @@ class _LocationScreenState extends State<LocationScreen> {
   int? minTemp;
   int? maxTemp;
   int? humidity;
-  String url= clearskye;
+  int? pressure;
+  String url = clearskye;
 
   @override
   void initState() {
@@ -32,48 +33,25 @@ class _LocationScreenState extends State<LocationScreen> {
     updateUI(widget.locationWeather);
   }
 
-  String setimage(int condition){
-
-    if(condition>=200 && condition<300){
+  String setimage(int condition) {
+    if (condition >= 200 && condition < 300) {
       return thunderstorm;
-
-    }
-    else if(condition>=300 && condition<500) {
-
+    } else if (condition >= 300 && condition < 500) {
       return drizzle;
-
-    }
-    else if(condition>=500 && condition<600){
-
+    } else if (condition >= 500 && condition < 600) {
       return rain;
-
-    }
-    else if(condition>=600 && condition<700){
-
+    } else if (condition >= 600 && condition < 700) {
       return snow;
-
-    }
-    else if(condition>=700 && condition<800){
-
+    } else if (condition >= 700 && condition < 800) {
       return mist;
-    }
-    else if(condition==800){
-
+    } else if (condition == 800) {
       return clearskye;
-
-    }
-    else if(condition>800){
-
+    } else if (condition > 800) {
       return cloud;
-
-    }
-    else{
+    } else {
       return sand;
     }
-
   }
-
-
 
   void updateUI(dynamic weatherdata) {
     setState(() {
@@ -87,6 +65,7 @@ class _LocationScreenState extends State<LocationScreen> {
         In = '';
         wind = 0;
         humidity = 0;
+        pressure=0;
         return;
       }
       double temp = weatherdata['main']['temp'];
@@ -100,16 +79,12 @@ class _LocationScreenState extends State<LocationScreen> {
       minTemp = temp.toInt();
       temp = weatherdata['main']['temp_max'];
       humidity = weatherdata['main']['humidity'];
+      pressure = weatherdata['main']['pressure'];
       maxTemp = temp.toInt();
-      message = weatherModel.getMessage(temperature!);
+      message = weatherModel.getMessage(condition!);
       cityname = weatherdata['name'];
-      print(condition);
-      // print(weatherdata);
-      print(url);
       url = setimage(condition);
-      print(url);
-
-
+      print(weatherdata);
     });
   }
 
@@ -265,10 +240,30 @@ class _LocationScreenState extends State<LocationScreen> {
                     ),
                   ),
                   Padding(
+                    padding: EdgeInsets.only(left: 20, top: 5),
+                    child: RichText(
+                      text: TextSpan(
+                        text: 'Pressure:- ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25,
+                        ),
+                        children: <TextSpan>[
+                          TextSpan(
+                              text: ' $pressure hPa',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              )),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
                     padding: EdgeInsets.only(left: 20.0, top: 40),
                     child: Container(
                       child: Text(
-                        "$message $In $cityname!",
+                        "$message",
                         textAlign: TextAlign.left,
                         style: kMessageTextStyle,
                       ),
