@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:upstrom/utilities/constants.dart';
 
 class CityScreen extends StatefulWidget {
+  const CityScreen({super.key});
+
   @override
   _CityScreenState createState() => _CityScreenState();
 }
@@ -18,7 +20,7 @@ class _CityScreenState extends State<CityScreen> {
             child: Container(
               alignment: Alignment.center,
               height: MediaQuery.of(context).size.height,
-              child: CircularProgressIndicator(
+              child: const CircularProgressIndicator(
                 color: Colors.white,
               ),
             ),
@@ -58,9 +60,9 @@ class _CityScreenState extends State<CityScreen> {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.all(20.0),
+                    padding: const EdgeInsets.all(20.0),
                     child: TextField(
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black,
                       ),
                       decoration: kTextfieldInputDecoration,
@@ -73,7 +75,7 @@ class _CityScreenState extends State<CityScreen> {
                     onTap: (){
                       Navigator.pop(context,cityname);
                     },
-                    child: Text(
+                    child: const Text(
                       'Get Weather',
                       style: kButtonTextStyle,
                     ),

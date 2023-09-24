@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:upstrom/screens/loading_screen.dart';
+import 'package:upstrom/screens/splash_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
-      home: LoadingScreen(),
+      home: Splash(),
     );
   }
 }
